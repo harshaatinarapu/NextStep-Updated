@@ -1,0 +1,33 @@
+{
+  "name": "nextstep",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node dev.js",
+    "build": "cd frontend && npm run build",
+    "clear-cookies": "node clear-cookies.js",
+    "restart": "node restart-dev.js",
+    "seed": "node scripts/seed/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.879.0",
+    "aws-sdk": "^2.1692.0",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "multer": "^2.0.2",
+    "nodemon": "^3.1.10",
+    "uuid": "^11.1.0"
+
+  }
+  
+}
+

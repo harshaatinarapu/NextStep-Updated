@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Upload Resource</title>
+</head>
+<body>
+  <h2>Upload Resource to Cloudflare + MongoDB</h2>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="text" name="title" placeholder="Title" /><br><br>
+    <input type="text" name="branch" placeholder="Branch" /><br><br>
+    <input type="number" name="sem" placeholder="Semester" /><br><br>
+    <input type="text" name="subject" placeholder="Subject" /><br><br>
+
+    <select name="resourceType">
+      <option value="notes">Notes</option>
+      <option value="previous_paper">Previous Paper</option>
+      <option value="video">Video</option>
+      <option value="book">Book</option>
+    </select><br><br>
+
+    <input type="file" name="file" /><br><br>
+    <button type="submit">Upload</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    const form = document.getElementById("uploadForm");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      try {
+        const res = await fetch("http://localhost:3000/api/resources/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById("result").innerText = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
