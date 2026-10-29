@@ -1,61 +1,199 @@
 const express = require("express");
-
 const router = express.Router();
+const { wrapAsync } = require("../utils/wrapAsync.js");
+const PlacementTopic = require("../models/placementtopic.js");
+const PlacementQuestion = require("../models/placementquestion.js");
 
-const {wrapAsync}=require("../utils/wrapAsync.js");
-const PlacementTopic =require("../models/placementtopic.js");
-const PlacementQuestion=require("../models/placementquestion.js");
-
-router.get("/topics",wrapAsync(async (req,res)=>{
-    try {
-        const topics = await PlacementTopic.find({ parentId: null }).sort({ order: 1 });
-        // Add question count to each topic
-        const topicsWithCount = await Promise.all(topics.map(async (topic) => {
-            const questionCount = await PlacementQuestion.countDocuments({ topicId: topic._id });
-            return {
-                ...topic.toObject(),
-                questionCount
-            };
-        }));
-        res.json(topicsWithCount); 
-    } catch (error) {
-        console.error('Error fetching topics:', error);
-        res.status(500).json({ error: 'Failed to fetch topics' });
-    }
-}));
-
-//for getting topics of dsa
-router.get("/topics/dsa",wrapAsync(async (req,res)=>{
-    const subtopics=await PlacementTopic.find({parentId:await PlacementTopic.find({name:"DSA"})}).sort({order:1});
-    res.json(subtopics);
-}));
-
-// Get questions for a specific topic (used by frontend)
-router.get("/questions/:topicId",wrapAsync(async(req,res)=>{
-    try {
-        const { topicId } = req.params;
-        const questions = await PlacementQuestion.find({ topicId: topicId });
-        res.json(questions);
-    } catch (error) {
-        console.error('Error fetching questions:', error);
-        res.status(500).json({ error: 'Failed to fetch questions' });
-    }
-}));
-
-//retrieving the questions of that subtopic like arrays, hashmaps and all other sub topics:
-router.get("/topics/dsa/:subtopic",wrapAsync(async(req,res)=>{
-    const { subtopic } = req.params;
-    const topic = await PlacementTopic.findOne({name:subtopic});
-    if(!topic){
-        return res.status(404).json({message:"no subtopic"});
-    }
-    // console.log(topic._id);
+// Get all top-level topics (e.g. DSA, Aptitude, Core Subjects)
+router.get("/topics", wrapAsync(async (req, res) => {
+  try {
+    const topics = await PlacementTopic.find({ parentId: null }).sort({ order: 1 });
     
-    const questions= await PlacementQuestion.find({ topicId: topic._id });
-    res.json(questions);
+    // Add question count and subtopic count to each topic
+    const topicsWithCount = await Promise.all(topics.map(async (topic) => {
+      // Direct questions under this topic
+      const directCount = await PlacementQuestion.countDocuments({ topicId: topic._id });
+      
+      // Also check subtopic questions if it has child sections
+      const subtopics = await PlacementTopic.find({ parentId: topic._id }, '_id');
+      const subtopicIds = subtopics.map(s => s._id);
+      const subtopicCount = subtopicIds.length > 0 
+        ? await PlacementQuestion.countDocuments({ topicId: { $in: subtopicIds } }) 
+        : 0;
+
+      return {
+        ...topic.toObject(),
+        questionCount: directCount + subtopicCount,
+        subtopicCount: subtopics.length
+      };
+    }));
+    
+    res.json(topicsWithCount); 
+  } catch (error) {
+    console.error('Error fetching topics:', error);
+    res.status(500).json({ error: 'Failed to fetch topics' });
+  }
 }));
 
-module.exports=router;
+// For getting subtopics of DSA with question counts
+router.get("/topics/dsa", wrapAsync(async (req, res) => {
+  try {
+    const dsaTopic = await PlacementTopic.findOne({ name: { $regex: /^dsa$/i } });
+    if (!dsaTopic) {
+      return res.json([]);
+    }
+    const subtopics = await PlacementTopic.find({ parentId: dsaTopic._id }).sort({ order: 1 });
+    const subtopicsWithCount = await Promise.all(subtopics.map(async (sub) => {
+      const questionCount = await PlacementQuestion.countDocuments({ topicId: sub._id });
+      return {
+        ...sub.toObject(),
+        questionCount
+      };
+    }));
+    res.json(subtopicsWithCount);
+  } catch (error) {
+    console.error('Error fetching DSA subtopics:', error);
+    res.status(500).json({ error: 'Failed to fetch DSA subtopics' });
+  }
+}));
 
+// For getting subtopics of Aptitude with question counts
+router.get("/topics/aptitude", wrapAsync(async (req, res) => {
+  try {
+    const aptTopic = await PlacementTopic.findOne({ name: { $regex: /^aptitude$/i } });
+    if (!aptTopic) {
+      return res.json([]);
+    }
+    const subtopics = await PlacementTopic.find({ parentId: aptTopic._id }).sort({ order: 1 });
+    const subtopicsWithCount = await Promise.all(subtopics.map(async (sub) => {
+      const questionCount = await PlacementQuestion.countDocuments({ topicId: sub._id });
+      return {
+        ...sub.toObject(),
+        questionCount
+      };
+    }));
+    res.json(subtopicsWithCount);
+  } catch (error) {
+    console.error('Error fetching Aptitude subtopics:', error);
+    res.status(500).json({ error: 'Failed to fetch Aptitude subtopics' });
+  }
+}));
 
+// Generic endpoint to get subtopics by parent topic ID
+router.get("/subtopics/:parentId", wrapAsync(async (req, res) => {
+  try {
+    const { parentId } = req.params;
+    const subtopics = await PlacementTopic.find({ parentId }).sort({ order: 1 });
+    const subtopicsWithCount = await Promise.all(subtopics.map(async (sub) => {
+      const questionCount = await PlacementQuestion.countDocuments({ topicId: sub._id });
+      return {
+        ...sub.toObject(),
+        questionCount
+      };
+    }));
+    res.json(subtopicsWithCount);
+  } catch (error) {
+    console.error('Error fetching subtopics by parent ID:', error);
+    res.status(500).json({ error: 'Failed to fetch subtopics' });
+  }
+}));
 
+// Get questions for a specific topic ID (used by frontend)
+router.get("/questions/:topicId", wrapAsync(async (req, res) => {
+  try {
+    const { topicId } = req.params;
+    const questions = await PlacementQuestion.find({ topicId: topicId });
+    res.json(questions);
+  } catch (error) {
+    console.error('Error fetching questions:', error);
+    res.status(500).json({ error: 'Failed to fetch questions' });
+  }
+}));
+
+// Retrieving DSA questions of that subtopic by name or alias
+router.get("/topics/dsa/:subtopic", wrapAsync(async (req, res) => {
+  try {
+    const { subtopic } = req.params;
+    const cleanSubtopic = decodeURIComponent(subtopic).trim();
+    const escaped = cleanSubtopic.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
+    // 1. Exact match
+    let topic = await PlacementTopic.findOne({
+      name: { $regex: new RegExp(`^${escaped}$`, 'i') }
+    });
+
+    // 2. Flexible alias matches
+    if (!topic) {
+      if (/^array/i.test(cleanSubtopic) || /^string/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /array/i } });
+      } else if (/^two/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /two\s*pointer/i } });
+      } else if (/^sliding/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /sliding/i } });
+      } else if (/^matrix/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /matrix/i } });
+      } else if (/^hash/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /hashmap/i } });
+      } else if (/^interval/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /interval/i } });
+      } else if (/^stack/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /stack/i } });
+      } else if (/^link/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /linked/i } });
+      } else if (/^tree/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /binary\s*tree\s*general/i } });
+      } else if (/^binary\s*search$/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: "Binary Search" });
+      } else if (/^heap/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /heap/i } });
+      } else if (/^bit/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /bit/i } });
+      } else if (/^math/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /math/i } });
+      } else if (/^dp/i.test(cleanSubtopic) || /dynamic/i.test(cleanSubtopic)) {
+        topic = await PlacementTopic.findOne({ name: { $regex: /1D DP/i } });
+      }
+    }
+    
+    if (!topic) {
+      return res.status(404).json({ message: "No subtopic found", subtopic: cleanSubtopic });
+    }
+    
+    const questions = await PlacementQuestion.find({ topicId: topic._id });
+    res.json(questions);
+  } catch (error) {
+    console.error('Error fetching subtopic questions:', error);
+    res.status(500).json({ error: 'Failed to fetch subtopic questions' });
+  }
+}));
+
+// Retrieving Aptitude questions of that subtopic by name or alias
+router.get("/topics/aptitude/:subtopic", wrapAsync(async (req, res) => {
+  try {
+    const { subtopic } = req.params;
+    const cleanSubtopic = decodeURIComponent(subtopic).trim();
+    const escaped = cleanSubtopic.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
+    let topic = await PlacementTopic.findOne({
+      name: { $regex: new RegExp(`^${escaped}$`, 'i') }
+    });
+
+    if (!topic) {
+      topic = await PlacementTopic.findOne({
+        name: { $regex: new RegExp(escaped, 'i') }
+      });
+    }
+    
+    if (!topic) {
+      return res.status(404).json({ message: "No subtopic found", subtopic: cleanSubtopic });
+    }
+    
+    const questions = await PlacementQuestion.find({ topicId: topic._id });
+    res.json(questions);
+  } catch (error) {
+    console.error('Error fetching aptitude subtopic questions:', error);
+    res.status(500).json({ error: 'Failed to fetch aptitude subtopic questions' });
+  }
+}));
+
+module.exports = router;

@@ -8,7 +8,7 @@ const PlacementPrep = () => {
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [questions, setQuestions] = useState([]);
-  const [isDsaFlow, setIsDsaFlow] = useState(false);
+  const [isSubtopicFlow, setIsSubtopicFlow] = useState(false);
   const [subtopics, setSubtopics] = useState([]);
   const [selectedSubtopic, setSelectedSubtopic] = useState(null);
   const [progressMap, setProgressMap] = useState({});
@@ -45,21 +45,32 @@ const PlacementPrep = () => {
   };
 
   const handleTopicClick = async (topic) => {
-    if (topic.name === 'DSA') {
-      setIsDsaFlow(true);
+    // Check if topic has subtopics (DSA, Aptitude, or any with subtopics)
+    if (topic.name === 'DSA' || topic.name === 'Aptitude' || (topic.subtopicCount && topic.subtopicCount > 0)) {
+      setIsSubtopicFlow(true);
       setSelectedTopic(topic);
       setSelectedSubtopic(null);
       setQuestions([]);
       try {
-        const response = await axios.get('/api/placementprep/topics/dsa');
+        let endpoint = `/api/placementprep/subtopics/${topic._id}`;
+        if (topic.name === 'DSA') {
+          endpoint = '/api/placementprep/topics/dsa';
+        } else if (topic.name === 'Aptitude') {
+          endpoint = '/api/placementprep/topics/aptitude';
+        }
+        const response = await axios.get(endpoint);
         setSubtopics(response.data);
       } catch (error) {
-        console.error('Error fetching DSA subtopics:', error);
+        console.error(`Error fetching ${topic.name} subtopics:`, error);
         setSubtopics([]);
       }
       return;
     }
+
+    // Direct questions under topic
+    setIsSubtopicFlow(false);
     setSelectedTopic(topic);
+    setSelectedSubtopic(null);
     try {
       const response = await axios.get(`/api/placementprep/questions/${topic._id}`);
       setQuestions(response.data);
@@ -72,17 +83,34 @@ const PlacementPrep = () => {
   const handleSubtopicClick = async (subtopic) => {
     setSelectedSubtopic(subtopic);
     try {
-      const response = await axios.get(`/api/placementprep/topics/dsa/${encodeURIComponent(subtopic.name)}`);
+      // 1. Direct topicId lookup
+      const response = await axios.get(`/api/placementprep/questions/${subtopic._id}`);
       setQuestions(response.data);
     } catch (error) {
-      console.error('Error fetching subtopic questions:', error);
-      setQuestions([]);
+      console.error('Direct topicId lookup failed, trying route name:', error);
+      try {
+        const routePrefix = selectedTopic?.name === 'Aptitude' ? 'aptitude' : 'dsa';
+        const response = await axios.get(`/api/placementprep/topics/${routePrefix}/${encodeURIComponent(subtopic.name)}`);
+        setQuestions(response.data);
+      } catch (err) {
+        console.error('Error fetching subtopic questions:', err);
+        setQuestions([]);
+      }
     }
   };
 
   const handleBackToDashboard = () => {
     navigate('/dashboard');
   };
+
+  const getTopicIcon = (name) => {
+    if (name === 'DSA') return 'fas fa-code';
+    if (name === 'Aptitude') return 'fas fa-brain';
+    if (name === 'Core Subjects') return 'fas fa-server';
+    return 'fas fa-book-open';
+  };
+
+  const completedCount = questions.filter(q => !!progressMap[q._id]).length;
 
   if (loading) {
     return (
@@ -103,11 +131,11 @@ const PlacementPrep = () => {
             <i className="fas fa-arrow-left"></i> Back to Dashboard
           </button>
           <h1>Placement Preparation</h1>
-          <p>Master the skills needed to land your dream job</p>
+          <p>Master technical interviews and preliminary screening with curated DSA (LeetCode 150) & Aptitude (IndiaBIX)</p>
         </div>
 
         <div className="placement-content">
-          {!selectedTopic && !isDsaFlow ? (
+          {!selectedTopic && !isSubtopicFlow ? (
             <div className="topics-grid">
               <h2>Choose a Topic to Start</h2>
               <div className="topics-list">
@@ -118,13 +146,15 @@ const PlacementPrep = () => {
                     onClick={() => handleTopicClick(topic)}
                   >
                     <div className="topic-icon">
-                      <i className="fas fa-code"></i>
+                      <i className={getTopicIcon(topic.name)}></i>
                     </div>
                     <h3>{topic.name}</h3>
                     <p>{topic.description}</p>
                     <div className="topic-stats">
-                      {topic.name === 'DSA' ? (
-                        <span><i className="fas fa-layer-group"></i> Explore Subtopics</span>
+                      {topic.subtopicCount > 0 ? (
+                        <span>
+                          <i className="fas fa-layer-group"></i> {topic.questionCount} Questions ({topic.subtopicCount} Sections)
+                        </span>
                       ) : (
                         (typeof topic.questionCount === 'number') && (
                           <span><i className="fas fa-question-circle"></i> {topic.questionCount} Questions</span>
@@ -135,16 +165,22 @@ const PlacementPrep = () => {
                 ))}
               </div>
             </div>
-          ) : isDsaFlow && !selectedSubtopic ? (
+          ) : isSubtopicFlow && !selectedSubtopic ? (
             <div className="topics-grid">
               <div className="questions-header">
-                <button className="back-btn" onClick={() => { setIsDsaFlow(false); setSelectedTopic(null); }}>
+                <button className="back-btn" onClick={() => { setIsSubtopicFlow(false); setSelectedTopic(null); }}>
                   <i className="fas fa-arrow-left"></i> Back to Topics
                 </button>
-                <h2>{selectedTopic?.name}</h2>
-                <p>{selectedTopic?.description}</p>
+                <h2>{selectedTopic?.name} Study Plan & Sections</h2>
+                <p>
+                  {selectedTopic?.name === 'DSA'
+                    ? 'Curated 150 essential problems across all core data structures and algorithms (LeetCode Top Interview 150)'
+                    : selectedTopic?.name === 'Aptitude'
+                    ? 'Curated Quantitative Aptitude topic sections based on IndiaBIX placement tests'
+                    : selectedTopic?.description}
+                </p>
               </div>
-              <h2>Choose a Subtopic</h2>
+              <h2>Choose an {selectedTopic?.name} Section</h2>
               <div className="topics-list">
                 {subtopics.map((sub) => (
                   <div 
@@ -153,10 +189,15 @@ const PlacementPrep = () => {
                     onClick={() => handleSubtopicClick(sub)}
                   >
                     <div className="topic-icon">
-                      <i className="fas fa-layer-group"></i>
+                      <i className={selectedTopic?.name === 'Aptitude' ? 'fas fa-calculator' : 'fas fa-layer-group'}></i>
                     </div>
                     <h3>{sub.name}</h3>
                     <p>{sub.description}</p>
+                    <div className="topic-stats" style={{ marginTop: '10px' }}>
+                      <span>
+                        <i className="fas fa-question-circle"></i> {typeof sub.questionCount === 'number' ? `${sub.questionCount} Questions` : 'View Questions'}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -165,19 +206,28 @@ const PlacementPrep = () => {
             <div className="questions-section">
               <div className="questions-header">
                 <button className="back-btn" onClick={() => {
-                  if (isDsaFlow && selectedSubtopic) {
+                  if (isSubtopicFlow && selectedSubtopic) {
                     setSelectedSubtopic(null);
                     setQuestions([]);
                   } else {
                     setSelectedTopic(null);
-                    setIsDsaFlow(false);
+                    setIsSubtopicFlow(false);
                     setQuestions([]);
                   }
                 }}>
-                  <i className="fas fa-arrow-left"></i> {isDsaFlow && selectedSubtopic ? 'Back to Subtopics' : 'Back to Topics'}
+                  <i className="fas fa-arrow-left"></i> {isSubtopicFlow && selectedSubtopic ? `Back to ${selectedTopic?.name} Sections` : 'Back to Topics'}
                 </button>
-                <h2>{isDsaFlow ? (selectedSubtopic?.name || selectedTopic?.name) : selectedTopic.name}</h2>
-                <p>{isDsaFlow ? (selectedSubtopic?.description || selectedTopic?.description) : selectedTopic.description}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+                  <div>
+                    <h2>{isSubtopicFlow ? (selectedSubtopic?.name || selectedTopic?.name) : selectedTopic?.name}</h2>
+                    <p>{isSubtopicFlow ? (selectedSubtopic?.description || selectedTopic?.description) : selectedTopic?.description}</p>
+                  </div>
+                  {questions.length > 0 && (
+                    <div className="subtopic-badge">
+                      Solved: {completedCount} / {questions.length} ({Math.round((completedCount / questions.length) * 100)}%)
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="questions-list">
@@ -186,10 +236,21 @@ const PlacementPrep = () => {
                     <div key={question._id} className="question-card">
                       <div className="question-header">
                         <span className="question-number">Q{index + 1}</span>
-                        <span className="question-difficulty">{question.difficulty}</span>
+                        <span className={`question-difficulty diff-${question.difficulty?.toLowerCase()}`}>
+                          {question.difficulty}
+                        </span>
                       </div>
                       <div className="question-content">
                         <h4>{question.question}</h4>
+                        {question.companyTags && question.companyTags.length > 0 && (
+                          <div className="company-tags" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', margin: '8px 0 12px 0' }}>
+                            {question.companyTags.map((tag, tIdx) => (
+                              <span key={tIdx} style={{ fontSize: '11px', background: 'rgba(99, 102, 241, 0.08)', color: '#4f46e5', padding: '2px 8px', borderRadius: '12px', fontWeight: '500' }}>
+                                <i className="fas fa-building" style={{ fontSize: '9px', marginRight: '4px' }}></i>{tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         <div className="question-actions">
                           <label className="progress-check">
                             <input
@@ -206,7 +267,8 @@ const PlacementPrep = () => {
                               rel="noopener noreferrer"
                               className="open-link-btn"
                             >
-                              Open Problem
+                              <i className="fas fa-external-link-alt" style={{ marginRight: '6px' }}></i>
+                              {question.link.includes('leetcode.com') ? 'Solve on LeetCode' : question.link.includes('indiabix.com') ? 'Practice on IndiaBIX' : 'Open Problem'}
                             </a>
                           )}
                         </div>

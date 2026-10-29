@@ -51,10 +51,18 @@ const Login = () => {
       });
 
       if (response.status === 200 || response.status === 201) {
+        if (response.data?.token) {
+          localStorage.setItem('token', response.data.token);
+          axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+        }
+        if (response.data) {
+          localStorage.setItem('user', JSON.stringify(response.data));
+        }
+
         showAlert('Success! Redirecting...', 'success');
         setTimeout(() => {
           navigate('/dashboard');
-        }, 1500);
+        }, 1000);
       }
     } catch (error) {
       const message = error.response?.data?.error || 'An error occurred. Please try again.';
@@ -167,9 +175,22 @@ const Login = () => {
 
         <div className="toggle-form">
           <p>{isLoginMode ? "Don't have an account?" : "Already have an account?"}</p>
-          <a onClick={() => setIsLoginMode(!isLoginMode)}>
+          <button 
+            type="button" 
+            onClick={() => setIsLoginMode(!isLoginMode)}
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: '#6366f1', 
+              cursor: 'pointer', 
+              font: 'inherit', 
+              fontWeight: '600', 
+              padding: 0,
+              textDecoration: 'underline'
+            }}
+          >
             {isLoginMode ? "Sign up here" : "Sign in here"}
-          </a>
+          </button>
         </div>
       </div>
     </div>

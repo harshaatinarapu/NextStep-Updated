@@ -3,15 +3,27 @@ const User = require('../models/userSchema.js');
 
 const protect = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
-    if (!token) return res.status(401).json({ error: 'Not authorized' });
+    let token = req.cookies?.token;
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return res.status(401).json({ error: 'Not authorized, token missing' });
+    }
+
+    const secret = process.env.JWT_SECRET || 'nextstep_jwt_secret_dev_key_2026';
+    const decoded = jwt.verify(token, secret);
+
     req.user = await User.findById(decoded.userId).select('-password');
-    // console.log("yes verified");
+    if (!req.user) {
+      return res.status(401).json({ error: 'Not authorized, user not found' });
+    }
+
     next();
-  } catch {
-    res.status(401).json({ error: 'Not authorized' });
+  } catch (error) {
+    return res.status(401).json({ error: 'Not authorized, token invalid or expired' });
   }
 };
 

@@ -4,12 +4,13 @@ dotenv.config();   // loads .env
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB Connected");
+    const mongoURI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/nextstep";
+    await mongoose.connect(mongoURI);
+    console.log("MongoDB Connected:", mongoURI.includes("@") ? "Remote Cluster" : mongoURI);
   } catch (error) {
     console.error("MongoDB Connection Error:", error.message);
     process.exit(1);
   }
 };
 
-module.exports = connectDB;   // <-- export for reuse
+module.exports = connectDB;

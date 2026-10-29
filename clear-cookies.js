@@ -1,14 +1,13 @@
 // Simple script to clear cookies and restart development
-const { exec } = require('child_process');
+require('dotenv').config();
+const http = require('http');
 
 console.log('🧹 Clearing cookies and restarting development environment...\n');
 
-// Clear cookies by making a request to the clear-cookies endpoint
-const http = require('http');
-
+const port = process.env.PORT || 5000;
 const options = {
   hostname: 'localhost',
-  port: 3000,
+  port: port,
   path: '/api/auth/clear-cookies',
   method: 'POST',
   headers: {
@@ -25,7 +24,7 @@ const req = http.request(options, (res) => {
 });
 
 req.on('error', (err) => {
-  console.log('⚠️  Could not clear cookies (server might not be running)');
+  console.log('⚠️  Could not clear cookies via API (server might not be running on port ' + port + ')');
   console.log('💡 Try clearing your browser cookies manually:');
   console.log('   - Press F12 to open DevTools');
   console.log('   - Go to Application tab');

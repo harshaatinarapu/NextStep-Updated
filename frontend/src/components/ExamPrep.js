@@ -140,11 +140,9 @@ const ExamPrep = () => {
   };
 
   const handleResourceClick = (resource) => {
-    if (resource.resourceType === 'video') {
-      window.open(resource.fileUrl, '_blank');
-    } else {
-      // For PDFs and other documents
-      window.open(resource.fileUrl, '_blank');
+    const targetUrl = resource.fileUrl || resource.url;
+    if (targetUrl) {
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
     }
   };
 

@@ -1,15 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch (e) {
+        console.error("Failed to parse user info:", e);
+      }
+    }
+  }, []);
 
   const handleOptionClick = (path) => {
     navigate(path);
   };
 
-  const handleLogout = () => {
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await axios.post('/api/auth/logout');
+    } catch (e) {
+      console.warn("Logout request error:", e);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      delete axios.defaults.headers.common['Authorization'];
+      navigate('/login');
+    }
   };
 
   return (
@@ -19,7 +41,7 @@ const Dashboard = () => {
           <button className="logout-btn" onClick={handleLogout}>
             <i className="fas fa-sign-out-alt"></i> Logout
           </button>
-          <h1>Welcome to NextStep</h1>
+          <h1>Welcome to NextStep{user?.name ? `, ${user.name}` : ''}</h1>
           <p>Choose your preparation path and take the next step towards your career goals</p>
         </div>
 

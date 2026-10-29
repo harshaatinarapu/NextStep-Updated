@@ -12,10 +12,10 @@ const ApiTest = () => {
   const testApiEndpoints = async () => {
     const endpoints = [
       { name: 'Health Check', url: '/api/health' },
-      { name: 'Auth Register', url: '/api/auth/register', method: 'POST', data: { name: 'Test User', email: 'test@example.com', password: 'test123', role: 'user' } },
+      { name: 'Branches', url: '/api/branches' },
+      { name: 'Auth Login', url: '/api/auth/login', method: 'POST', data: { email: 'test@example.com', password: 'password123' } },
       { name: 'Placement Topics', url: '/api/placementprep/topics' },
-      { name: 'Exam Subjects', url: '/api/examprep/subjects' },
-      { name: 'Branches', url: '/api/branches' }
+      { name: 'Exam Subjects', url: '/api/examprep/subjects' }
     ];
 
     const results = {};
@@ -32,6 +32,9 @@ const ApiTest = () => {
         }
 
         const response = await axios(config);
+        if (response.data?.token) {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+        }
         results[endpoint.name] = {
           status: 'SUCCESS',
           statusCode: response.status,
