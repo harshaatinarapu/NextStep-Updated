@@ -139,7 +139,79 @@ async function runTests() {
     const resources = await request('GET', '/api/resources');
     assert(resources.status === 200 && Array.isArray(resources.data) && resources.data.length > 0, `GET /api/resources returns ${resources.data?.length} uploaded resources`);
 
-    // 12. Chatbot test
+    // 12. Admin Login & Role Check
+    const adminLogin = await request('POST', '/api/auth/login', {
+      email: 'admin@example.com',
+      password: 'admin123'
+    });
+    assert(adminLogin.status === 200 && adminLogin.data?.role === 'admin', 'POST /api/auth/login logs in admin and verifies role is admin');
+    if (adminLogin.data?.token) {
+      authToken = adminLogin.data.token;
+    }
+
+    // 13. Admin Add Question to DSA
+    const arrayTopic = dsaSubtopics.data.find(s => /array/i.test(s.name));
+    assert(!!arrayTopic, 'Found DSA Array topic for admin question upload');
+    let addedDsaQId = null;
+    if (arrayTopic) {
+      const addDsaQ = await request('POST', '/api/placementprep/questions', {
+        topicId: arrayTopic._id,
+        question: 'Trapping Rain Water II (Admin Test Upload)',
+        link: 'https://leetcode.com/problems/trapping-rain-water-ii/',
+        difficulty: 'Hard',
+        companyTags: ['Google', 'Amazon']
+      });
+      assert(addDsaQ.status === 201 && addDsaQ.data?.question?._id, 'POST /api/placementprep/questions successfully uploads DSA question');
+      addedDsaQId = addDsaQ.data?.question?._id;
+
+      // Verify question is immediately visible in topic questions list
+      const updatedQuestions = await request('GET', `/api/placementprep/questions/${arrayTopic._id}`);
+      const foundInList = updatedQuestions.data?.some(q => q._id === addedDsaQId);
+      assert(foundInList === true, 'GET /api/placementprep/questions/:topicId immediately includes newly uploaded question for students');
+    }
+
+    // 14. Admin Add Question to Aptitude
+    const twTopic = aptSubtopics.data.find(s => /time and work/i.test(s.name));
+    assert(!!twTopic, 'Found Aptitude Time and Work section for admin upload');
+    let addedAptQId = null;
+    if (twTopic) {
+      const addAptQ = await request('POST', '/api/placementprep/questions', {
+        topicId: twTopic._id,
+        question: 'Efficiency Calculation under Variable Manpower (Admin Test Upload)',
+        link: 'https://www.indiabix.com/aptitude/time-and-work/',
+        difficulty: 'Medium',
+        companyTags: ['TCS', 'Infosys']
+      });
+      assert(addAptQ.status === 201 && addAptQ.data?.question?._id, 'POST /api/placementprep/questions successfully uploads Aptitude question');
+      addedAptQId = addAptQ.data?.question?._id;
+    }
+
+    // Clean up test questions
+    if (addedDsaQId) {
+      const delDsa = await request('DELETE', `/api/placementprep/questions/${addedDsaQId}`);
+      assert(delDsa.status === 200, 'DELETE /api/placementprep/questions/:id cleans up test DSA question');
+    }
+    if (addedAptQId) {
+      const delApt = await request('DELETE', `/api/placementprep/questions/${addedAptQId}`);
+      assert(delApt.status === 200, 'DELETE /api/placementprep/questions/:id cleans up test Aptitude question');
+    }
+
+    // 15. Admin Add & Delete Exam Resource
+    const addResource = await request('POST', '/api/resources', {
+      subject: 'DBMS',
+      branch: 'IT',
+      sem: 3,
+      resourceType: 'notes',
+      title: 'DBMS Concurrency Control Test Notes',
+      url: 'https://example.com/dbms-concurrency.pdf'
+    });
+    assert(addResource.status === 201 && addResource.data?.resource?._id, 'POST /api/resources creates exam resource with direct link');
+    if (addResource.data?.resource?._id) {
+      const delRes = await request('DELETE', `/api/resources/${addResource.data.resource._id}`);
+      assert(delRes.status === 200, 'DELETE /api/resources/:id deletes exam resource');
+    }
+
+    // 16. Chatbot test
     const chat = await request('POST', '/chat', { message: 'Hello! What is NextStep?' });
     assert(chat.status === 200 && chat.data?.response, 'POST /chat connects to AI model and returns response');
 

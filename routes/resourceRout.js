@@ -42,6 +42,60 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Create resource with link/URL directly
+router.post("/", async (req, res) => {
+  try {
+    const { subject, resourceType, title, branch, sem, url, fileUrl } = req.body;
+    if (!title || !title.trim()) {
+      return res.status(400).json({ error: "Title is required" });
+    }
+    const finalUrl = (url || fileUrl || "").trim();
+    if (!finalUrl) {
+      return res.status(400).json({ error: "Resource URL or link is required" });
+    }
+
+    let subDoc = null;
+    if (subject) {
+      subDoc = await Subject.findOne({
+        subjectName: { $regex: new RegExp(`^${subject.trim()}$`, 'i') }
+      });
+    }
+
+    const resource = new Resource({
+      subject_id: subDoc ? subDoc._id : null,
+      subject: subject ? subject.trim() : (subDoc ? subDoc.subjectName : ''),
+      branch: branch || '',
+      sem: sem ? parseInt(sem, 10) : undefined,
+      resourceType: resourceType || 'notes',
+      title: title.trim(),
+      url: finalUrl,
+      fileUrl: finalUrl,
+      uploadedBy: req.user?._id || null,
+    });
+
+    await resource.save();
+    res.status(201).json({ message: "Exam resource added successfully", resource });
+  } catch (err) {
+    console.error("Resource creation error:", err);
+    res.status(500).json({ error: err.message || "Failed to create resource" });
+  }
+});
+
+// Delete a resource
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Resource.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ error: "Resource not found" });
+    }
+    res.json({ message: "Resource deleted successfully", id });
+  } catch (err) {
+    console.error("Resource delete error:", err);
+    res.status(500).json({ error: err.message || "Failed to delete resource" });
+  }
+});
+
 // Upload Route
 router.post("/upload", upload.single("file"), async (req, res) => {
   try {

@@ -196,4 +196,65 @@ router.get("/topics/aptitude/:subtopic", wrapAsync(async (req, res) => {
   }
 }));
 
+// Add a new question under a topic/subtopic (DSA or Aptitude)
+router.post("/questions", wrapAsync(async (req, res) => {
+  try {
+    const { topicId, question, link, difficulty, companyTags } = req.body;
+
+    if (!topicId) {
+      return res.status(400).json({ error: "Topic is required" });
+    }
+    if (!question || !question.trim()) {
+      return res.status(400).json({ error: "Question title is required" });
+    }
+
+    const topic = await PlacementTopic.findById(topicId);
+    if (!topic) {
+      return res.status(404).json({ error: "Selected topic not found" });
+    }
+
+    let parsedTags = [];
+    if (Array.isArray(companyTags)) {
+      parsedTags = companyTags.map(t => String(t).trim()).filter(Boolean);
+    } else if (typeof companyTags === 'string' && companyTags.trim()) {
+      parsedTags = companyTags.split(',').map(t => t.trim()).filter(Boolean);
+    }
+
+    const validDiff = ["Easy", "Medium", "Hard"];
+    const parsedDiff = validDiff.includes(difficulty) ? difficulty : "Medium";
+
+    const newQuestion = await PlacementQuestion.create({
+      topicId: topic._id,
+      question: question.trim(),
+      link: link ? link.trim() : "",
+      difficulty: parsedDiff,
+      companyTags: parsedTags
+    });
+
+    res.status(201).json({
+      message: `Question added successfully to ${topic.name}`,
+      question: newQuestion,
+      topicName: topic.name
+    });
+  } catch (error) {
+    console.error("Error creating placement question:", error);
+    res.status(500).json({ error: error.message || "Failed to add question" });
+  }
+}));
+
+// Delete a question by ID
+router.delete("/questions/:id", wrapAsync(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await PlacementQuestion.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+    res.json({ message: "Question deleted successfully", id });
+  } catch (error) {
+    console.error("Error deleting question:", error);
+    res.status(500).json({ error: error.message || "Failed to delete question" });
+  }
+}));
+
 module.exports = router;

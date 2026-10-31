@@ -89,9 +89,11 @@ NextStep/
 │   ├── public/                  # Public assets, favicon, index.html
 │   └── src/
 │       ├── components/          # React components
-│       │   ├── Dashboard.js     # Main hub for Exam & Placement prep
-│       │   ├── ExamPrep.js      # Branch/Sem selection & Subject resources
-│       │   ├── PlacementPrep.js # DSA (150) & Aptitude (IndiaBIX) tracker
+│       │   ├── Dashboard.js     # Main hub (Student: Start Prep / Admin: Edit Prep)
+│       │   ├── ExamPrep.js      # Student branch/sem selection & subject resources
+│       │   ├── PlacementPrep.js # Student DSA (150) & Aptitude (IndiaBIX) tracker
+│       │   ├── AdminPlacementPrep.js # Admin: Add questions to DSA & Aptitude topics
+│       │   ├── AdminExamPrep.js # Admin: Upload notes, PYQs, videos & reference books
 │       │   ├── Login.js         # Student/Admin sign-in & register
 │       │   └── ApiTest.js       # Diagnostic health panel
 │       ├── App.js               # Route definitions
@@ -277,6 +279,8 @@ Verifies:
 | `GET` | `/api/placementprep/topics/aptitude/:subtopic` | Get questions for a specific Aptitude section | Public |
 | `GET` | `/api/placementprep/questions/:topicId` | Get questions by topic/subtopic ObjectId | Public |
 | `GET` | `/api/placementprep/subtopics/:parentId` | Generic subtopics fetcher by parent topic ID | Public |
+| `POST` | `/api/placementprep/questions` | Admin: Add question with title, URL, difficulty & tags | Private |
+| `DELETE` | `/api/placementprep/questions/:id` | Admin: Delete question by ID | Private |
 
 ### 3. Exam Preparation (`/api/examprep`)
 | Method | Endpoint | Description | Access |
