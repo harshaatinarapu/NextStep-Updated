@@ -142,7 +142,7 @@ const PlacementPrep = () => {
                 {topics.map((topic) => (
                   <div 
                     key={topic._id} 
-                    className="topic-card"
+                    className={`topic-card topic-card-${topic.name === 'DSA' ? 'dsa' : topic.name === 'Aptitude' ? 'aptitude' : 'core'}`}
                     onClick={() => handleTopicClick(topic)}
                   >
                     <div className="topic-icon">
@@ -185,7 +185,7 @@ const PlacementPrep = () => {
                 {subtopics.map((sub) => (
                   <div 
                     key={sub._id}
-                    className="topic-card"
+                    className={`topic-card subtopic-card subtopic-theme-${selectedTopic?.name === 'DSA' ? 'dsa' : 'aptitude'}`}
                     onClick={() => handleSubtopicClick(sub)}
                   >
                     <div className="topic-icon">
@@ -217,14 +217,23 @@ const PlacementPrep = () => {
                 }}>
                   <i className="fas fa-arrow-left"></i> {isSubtopicFlow && selectedSubtopic ? `Back to ${selectedTopic?.name} Sections` : 'Back to Topics'}
                 </button>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginTop: '10px', width: '100%' }}>
                   <div>
                     <h2>{isSubtopicFlow ? (selectedSubtopic?.name || selectedTopic?.name) : selectedTopic?.name}</h2>
                     <p>{isSubtopicFlow ? (selectedSubtopic?.description || selectedTopic?.description) : selectedTopic?.description}</p>
                   </div>
                   {questions.length > 0 && (
-                    <div className="subtopic-badge">
-                      Solved: {completedCount} / {questions.length} ({Math.round((completedCount / questions.length) * 100)}%)
+                    <div className="progress-badge-box">
+                      <div className="subtopic-badge">
+                        <i className="fas fa-trophy" style={{ marginRight: '6px', color: '#f59e0b' }}></i>
+                        Solved: {completedCount} / {questions.length} ({Math.round((completedCount / questions.length) * 100)}%)
+                      </div>
+                      <div className="progress-track-bar">
+                        <div 
+                          className="progress-fill-bar" 
+                          style={{ width: `${Math.round((completedCount / questions.length) * 100)}%` }}
+                        ></div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -233,12 +242,20 @@ const PlacementPrep = () => {
               <div className="questions-list">
                 {questions.length > 0 ? (
                   questions.map((question, index) => (
-                    <div key={question._id} className="question-card">
+                    <div key={question._id} className={`question-card ${progressMap[question._id] ? 'card-completed' : ''}`}>
                       <div className="question-header">
                         <span className="question-number">Q{index + 1}</span>
-                        <span className={`question-difficulty diff-${question.difficulty?.toLowerCase()}`}>
-                          {question.difficulty}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {progressMap[question._id] && (
+                            <span className="solved-pill"><i className="fas fa-check"></i> Completed</span>
+                          )}
+                          <span className={`question-difficulty diff-${question.difficulty?.toLowerCase()}`}>
+                            {question.difficulty === 'Easy' && <i className="fas fa-leaf" style={{ marginRight: '4px' }}></i>}
+                            {question.difficulty === 'Medium' && <i className="fas fa-bolt" style={{ marginRight: '4px' }}></i>}
+                            {question.difficulty === 'Hard' && <i className="fas fa-fire" style={{ marginRight: '4px' }}></i>}
+                            {question.difficulty}
+                          </span>
+                        </div>
                       </div>
                       <div className="question-content">
                         <h4>{question.question}</h4>

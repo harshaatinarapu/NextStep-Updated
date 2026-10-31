@@ -87,32 +87,35 @@ const Dashboard = () => {
         <div className="options-grid">
           {/* Placement Preparation Card */}
           <div 
-            className="option-card fade-in" 
+            className="option-card option-card-placement fade-in" 
             onClick={() => handleOptionClick(isAdmin ? '/admin/placement-prep' : '/placement-prep')}
           >
-            <div className="option-icon">
-              <i className="fas fa-briefcase"></i>
+            <div className="card-top-pill placement-pill">
+              <i className="fas fa-rocket"></i> Career Booster
+            </div>
+            <div className="option-icon icon-placement">
+              <i className="fas fa-laptop-code"></i>
             </div>
             <h2>Placement Preparation</h2>
-            <p>Get ready for your dream job with comprehensive placement preparation materials and practice tests.</p>
+            <p>Get interview-ready with 150 LeetCode DSA problems & 20 IndiaBIX Quantitative Aptitude sections.</p>
             
             <ul className="option-features">
-              <li>Technical interview preparation</li>
-              <li>HR interview questions</li>
-              <li>Coding challenges and solutions</li>
-              <li>Aptitude test practice</li>
-              <li>Company-specific preparation</li>
-              <li>Mock interviews</li>
+              <li><span className="feature-bullet bullet-cyan"><i className="fas fa-code"></i></span> Technical interview DSA coding</li>
+              <li><span className="feature-bullet bullet-pink"><i className="fas fa-brain"></i></span> IndiaBIX Quantitative Aptitude</li>
+              <li><span className="feature-bullet bullet-amber"><i className="fas fa-building"></i></span> Company tags (TCS, Amazon, Infosys)</li>
+              <li><span className="feature-bullet bullet-emerald"><i className="fas fa-check-circle"></i></span> Live progress tracking per topic</li>
+              <li><span className="feature-bullet bullet-purple"><i className="fas fa-comments"></i></span> HR & behavioral interview tips</li>
+              <li><span className="feature-bullet bullet-gold"><i className="fas fa-trophy"></i></span> LeetCode & IndiaBIX direct practice</li>
             </ul>
 
-            <button className="option-btn">
+            <button className="option-btn option-btn-placement">
               {isAdmin ? (
                 <>
                   <i className="fas fa-edit"></i> Edit Placement Prep
                 </>
               ) : (
                 <>
-                  <i className="fas fa-arrow-right"></i> Start Placement Prep
+                  <i className="fas fa-bolt"></i> Start Placement Prep
                 </>
               )}
             </button>
@@ -120,32 +123,35 @@ const Dashboard = () => {
 
           {/* Exam Preparation Card */}
           <div 
-            className="option-card fade-in" 
+            className="option-card option-card-exam fade-in" 
             onClick={() => handleOptionClick(isAdmin ? '/admin/exam-prep' : '/exam-prep')}
           >
-            <div className="option-icon">
+            <div className="card-top-pill exam-pill">
+              <i className="fas fa-star"></i> Semester Ace
+            </div>
+            <div className="option-icon icon-exam">
               <i className="fas fa-graduation-cap"></i>
             </div>
             <h2>Exam Preparation</h2>
-            <p>Excel in your academic exams with comprehensive study materials, notes, and practice papers.</p>
+            <p>Score high in your academic exams with branch & semester-wise notes, previous papers, and videos.</p>
             
             <ul className="option-features">
-              <li>Subject-wise study materials</li>
-              <li>Previous year question papers</li>
-              <li>Video lectures and tutorials</li>
-              <li>Interactive quizzes</li>
-              <li>Study notes and summaries</li>
-              <li>Exam strategies and tips</li>
+              <li><span className="feature-bullet bullet-purple"><i className="fas fa-book-open"></i></span> 10 Engineering branches covered</li>
+              <li><span className="feature-bullet bullet-coral"><i className="fas fa-file-invoice"></i></span> Previous Year Question Papers (PYQs)</li>
+              <li><span className="feature-bullet bullet-rose"><i className="fas fa-play-circle"></i></span> Curated video lecture playlists</li>
+              <li><span className="feature-bullet bullet-amber"><i className="fas fa-feather-alt"></i></span> Unit-wise lecture summaries & notes</li>
+              <li><span className="feature-bullet bullet-emerald"><i className="fas fa-bookmark"></i></span> Standard reference textbooks</li>
+              <li><span className="feature-bullet bullet-cyan"><i className="fas fa-bullseye"></i></span> Exam scoring tips & formulas</li>
             </ul>
 
-            <button className="option-btn">
+            <button className="option-btn option-btn-exam">
               {isAdmin ? (
                 <>
                   <i className="fas fa-edit"></i> Edit Exam Preparation
                 </>
               ) : (
                 <>
-                  <i className="fas fa-arrow-right"></i> Start Exam Prep
+                  <i className="fas fa-fire"></i> Start Exam Prep
                 </>
               )}
             </button>
