@@ -40,21 +40,21 @@ const HomePage = () => {
   ];
 
   const dsaHighlights = [
-    { title: 'Array & Strings', count: '24 Problems', difficulty: 'Easy - Hard', tag: 'Amazon, Google' },
-    { title: 'Two Pointers & Sliding Window', count: '14 Problems', difficulty: 'Medium', tag: 'Microsoft, Meta' },
-    { title: 'Trees, BST & Traversals', count: '22 Problems', difficulty: 'Medium - Hard', tag: 'Uber, TCS Digital' },
-    { title: 'Graph BFS / DFS & Dijkstra', count: '16 Problems', difficulty: 'Medium - Hard', tag: 'Adobe, Infosys SP' },
-    { title: 'Dynamic Programming (1D & Multi)', count: '18 Problems', difficulty: 'Hard', tag: 'Directi, Atlassian' },
-    { title: 'Stack, Queue & Linked List', count: '15 Problems', difficulty: 'Easy - Med', tag: 'Accenture, Wipro' }
+    { title: 'Array & Strings', difficulty: 'Easy - Hard', tag: 'Amazon, Google' },
+    { title: 'Two Pointers & Sliding Window', difficulty: 'Medium', tag: 'Microsoft, Meta' },
+    { title: 'Trees, BST & Traversals', difficulty: 'Medium - Hard', tag: 'Uber, TCS Digital' },
+    { title: 'Graph BFS / DFS & Dijkstra', difficulty: 'Medium - Hard', tag: 'Adobe, Infosys SP' },
+    { title: 'Dynamic Programming (1D & Multi)', difficulty: 'Hard', tag: 'Directi, Atlassian' },
+    { title: 'Stack, Queue & Linked List', difficulty: 'Easy - Med', tag: 'Accenture, Wipro' }
   ];
 
   const aptitudeHighlights = [
-    { title: 'Time & Work, Pipes & Cisterns', questions: '8 Core Types', keyFormula: 'Work = Efficiency × Time' },
-    { title: 'Speed, Time, Distance & Trains', questions: '9 Core Types', keyFormula: 'Relative Speed & Lengths' },
-    { title: 'Profit, Loss & Simple/Compound Interest', questions: '10 Core Types', keyFormula: 'Effective Percentage Shifts' },
-    { title: 'Permutations, Combinations & Probability', questions: '7 Core Types', keyFormula: 'nPr, nCr & Event Odds' },
-    { title: 'Ratios, Proportions & Mixtures', questions: '8 Core Types', keyFormula: 'Alligation Cross Rule' },
-    { title: 'Clocks, Calendars & Number Series', questions: '6 Core Types', keyFormula: 'Angle Formula & Odd Days' }
+    { title: 'Time & Work, Pipes & Cisterns', keyFormula: 'Work = Efficiency × Time' },
+    { title: 'Speed, Time, Distance & Trains', keyFormula: 'Relative Speed & Lengths' },
+    { title: 'Profit, Loss & Simple/Compound Interest', keyFormula: 'Effective Percentage Shifts' },
+    { title: 'Permutations, Combinations & Probability', keyFormula: 'nPr, nCr & Event Odds' },
+    { title: 'Ratios, Proportions & Mixtures', keyFormula: 'Alligation Cross Rule' },
+    { title: 'Clocks, Calendars & Number Series', keyFormula: 'Angle Formula & Odd Days' }
   ];
 
   const samplePrompts = [
@@ -139,7 +139,7 @@ const HomePage = () => {
           <p className="hero-description fade-in">
             NextStep bridges university academic excellence and high-paying tech career readiness.
             Access branch & semester-wise verified <strong>Lecture Notes, PYQs, and Books</strong> alongside 
-            structured tracks for <strong>LeetCode Top 150 DSA</strong>, <strong>IndiaBIX Aptitude</strong>, 
+            structured tracks for <strong>DSA interview problems</strong> and <strong>quantitative aptitude practice</strong>,
             and a 24/7 <strong>Google Gemini AI Study Tutor</strong>.
           </p>
 
@@ -171,8 +171,8 @@ const HomePage = () => {
                 <i className="fas fa-laptop-code"></i>
               </div>
               <div className="metric-data">
-                <div className="metric-number">LeetCode 150</div>
-                <div className="metric-label">Handpicked DSA Interview Questions</div>
+                <div className="metric-number">DSA Interview Problems</div>
+                <div className="metric-label">Practice core data structures and algorithms</div>
               </div>
             </div>
 
@@ -181,8 +181,8 @@ const HomePage = () => {
                 <i className="fas fa-chart-pie"></i>
               </div>
               <div className="metric-data">
-                <div className="metric-number">77+ Aptitude</div>
-                <div className="metric-label">IndiaBIX Quantitative Topics with formulas</div>
+                <div className="metric-number">Aptitude Practice</div>
+                <div className="metric-label">Quantitative topics with formulas</div>
               </div>
             </div>
 
@@ -252,8 +252,8 @@ const HomePage = () => {
                 Complete topic-wise DSA sheets and quantitative aptitude modules.
               </p>
               <ul className="feature-bullets">
-                <li><i className="fas fa-check-circle"></i> LeetCode Top 150 categorized into 23 subtopics</li>
-                <li><i className="fas fa-check-circle"></i> IndiaBIX Quantitative Aptitude across 20 modules</li>
+                <li><i className="fas fa-check-circle"></i> DSA interview problems organized by topic</li>
+                <li><i className="fas fa-check-circle"></i> Quantitative aptitude practice modules</li>
                 <li><i className="fas fa-check-circle"></i> Company recruitment tags (Amazon, TCS, Google, etc.)</li>
                 <li><i className="fas fa-check-circle"></i> Persistent checkbox completion & live progress tracking</li>
               </ul>
@@ -401,13 +401,13 @@ const HomePage = () => {
               className={`placement-tab-btn ${activeTab === 'dsa' ? 'active' : ''}`}
               onClick={() => setActiveTab('dsa')}
             >
-              <i className="fas fa-code"></i> LeetCode Top 150 DSA
+              <i className="fas fa-code"></i> DSA Interview Problems
             </button>
             <button 
               className={`placement-tab-btn ${activeTab === 'aptitude' ? 'active' : ''}`}
               onClick={() => setActiveTab('aptitude')}
             >
-              <i className="fas fa-calculator"></i> IndiaBIX Quantitative Aptitude
+              <i className="fas fa-calculator"></i> Quantitative Aptitude
             </button>
           </div>
 
@@ -416,8 +416,8 @@ const HomePage = () => {
             <div className="tab-pane-content fade-in">
               <div className="tab-info-banner">
                 <div className="tab-info-text">
-                  <h3>Master 150 Foundational Problems across 23 DSA Categories</h3>
-                  <p>Includes Array, Two Pointers, Sliding Window, Trees, Graphs, DP, Intervals, Binary Search, and Backtracking.</p>
+                  <h3>Practice DSA Interview Problems</h3>
+                  <p>Explore Arrays, Two Pointers, Sliding Window, Trees, Graphs, DP, Intervals, Binary Search, and Backtracking.</p>
                 </div>
                 <div className="company-logo-strip">
                   <span className="company-pill"><i className="fab fa-google"></i> Google</span>
@@ -437,7 +437,7 @@ const HomePage = () => {
                     </div>
                     <h4>{item.title}</h4>
                     <div className="dsa-card-bottom">
-                      <span className="dsa-count"><i className="fas fa-list-check"></i> {item.count}</span>
+                      <span className="dsa-count"><i className="fas fa-list-check"></i> Interview Problems</span>
                       <span className="dsa-recruiter"><i className="fas fa-briefcase"></i> {item.tag}</span>
                     </div>
                   </div>
@@ -451,7 +451,7 @@ const HomePage = () => {
             <div className="tab-pane-content fade-in">
               <div className="tab-info-banner aptitude-banner">
                 <div className="tab-info-text">
-                  <h3>77 Comprehensive Aptitude Questions Across 20 Real Placement Sections</h3>
+                  <h3>Quantitative Aptitude Practice</h3>
                   <p>Practice time-saving shortcut strategies, formula derivations, and standard problem types tested in TCS, Cognizant, Wipro, and Accenture.</p>
                 </div>
                 <div className="company-logo-strip">
@@ -467,8 +467,7 @@ const HomePage = () => {
                 {aptitudeHighlights.map((item, idx) => (
                   <div key={idx} className="aptitude-card">
                     <div className="apt-top">
-                      <span className="apt-badge"><i className="fas fa-lightbulb"></i> Section {idx + 1}</span>
-                      <span className="apt-types">{item.questions}</span>
+                      <span className="apt-badge"><i className="fas fa-lightbulb"></i> Practice Topic</span>
                     </div>
                     <h4>{item.title}</h4>
                     <div className="apt-formula-box">
@@ -484,7 +483,7 @@ const HomePage = () => {
           <div className="placement-cta-banner">
             <div className="cta-banner-text">
               <h4>Ready to track your progress with persistent checkmarks?</h4>
-              <p>Keep track of your solved questions, live percentages, and direct LeetCode links.</p>
+              <p>Keep track of your progress and open practice problems directly.</p>
             </div>
             <button className="hero-btn-primary" onClick={handleLoginClick}>
               Explore Placement Tracker <i className="fas fa-arrow-right"></i>
@@ -619,14 +618,14 @@ max_sum = max(max_sum, current_sum);</code></pre>
 
             <div className="workflow-step-card">
               <div className="step-number-bubble">03</div>
-              <h4>Solve LeetCode 150</h4>
-              <p>Work through 23 curated DSA categories with direct LeetCode problem links.</p>
+              <h4>Practice DSA Interview Problems</h4>
+              <p>Build skills across core data structures and algorithms topics.</p>
             </div>
 
             <div className="workflow-step-card">
               <div className="step-number-bubble">04</div>
               <h4>Practice Aptitude</h4>
-              <p>Tackle 77 high-yield IndiaBIX quantitative aptitude questions with standard formulas.</p>
+              <p>Practice quantitative aptitude topics and learn useful formulas.</p>
             </div>
 
             <div className="workflow-step-card highlight-step">
@@ -652,7 +651,7 @@ max_sum = max(max_sum, current_sum);</code></pre>
               </p>
               <ul className="role-perks">
                 <li><i className="fas fa-check"></i> Free access to all notes, papers, and books</li>
-                <li><i className="fas fa-check"></i> Individual progress tracking for LeetCode & Aptitude</li>
+                <li><i className="fas fa-check"></i> Individual progress tracking for DSA & Aptitude</li>
                 <li><i className="fas fa-check"></i> Direct integration with Google Gemini AI chatbot</li>
                 <li><i className="fas fa-check"></i> Clean, responsive, dark aurora user interface</li>
               </ul>
@@ -784,8 +783,8 @@ max_sum = max(max_sum, current_sum);</code></pre>
             <div className="footer-col">
               <h5>Placement Track</h5>
               <ul>
-                <li><button type="button" className="footer-link-btn" onClick={() => { setActiveTab('dsa'); scrollToSection('placements'); }}>LeetCode Top 150 DSA</button></li>
-                <li><button type="button" className="footer-link-btn" onClick={() => { setActiveTab('aptitude'); scrollToSection('placements'); }}>IndiaBIX Quantitative Aptitude</button></li>
+                <li><button type="button" className="footer-link-btn" onClick={() => { setActiveTab('dsa'); scrollToSection('placements'); }}>DSA Interview Problems</button></li>
+                <li><button type="button" className="footer-link-btn" onClick={() => { setActiveTab('aptitude'); scrollToSection('placements'); }}>Quantitative Aptitude</button></li>
                 <li><button type="button" className="footer-link-btn" onClick={() => scrollToSection('placements')}>Company Recruiter Tags</button></li>
                 <li><button type="button" className="footer-link-btn" onClick={() => scrollToSection('placements')}>Progress Percentage Tracker</button></li>
               </ul>

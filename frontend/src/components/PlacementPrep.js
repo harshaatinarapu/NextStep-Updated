@@ -131,7 +131,7 @@ const PlacementPrep = () => {
             <i className="fas fa-arrow-left"></i> Back to Dashboard
           </button>
           <h1>Placement Preparation</h1>
-          <p>Master technical interviews and preliminary screening with curated DSA (LeetCode 150) & Aptitude (IndiaBIX)</p>
+          <p>Prepare for technical interviews with DSA interview problems and quantitative aptitude practice.</p>
         </div>
 
         <div className="placement-content">
@@ -149,17 +149,15 @@ const PlacementPrep = () => {
                       <i className={getTopicIcon(topic.name)}></i>
                     </div>
                     <h3>{topic.name}</h3>
-                    <p>{topic.description}</p>
+                    <p>
+                      {topic.name === 'DSA'
+                        ? 'DSA interview problems across core data structures and algorithms'
+                        : topic.name === 'Aptitude'
+                        ? 'Quantitative aptitude practice for screening rounds'
+                        : topic.description}
+                    </p>
                     <div className="topic-stats">
-                      {topic.subtopicCount > 0 ? (
-                        <span>
-                          <i className="fas fa-layer-group"></i> {topic.questionCount} Questions ({topic.subtopicCount} Sections)
-                        </span>
-                      ) : (
-                        (typeof topic.questionCount === 'number') && (
-                          <span><i className="fas fa-question-circle"></i> {topic.questionCount} Questions</span>
-                        )
-                      )}
+                      <span><i className="fas fa-layer-group"></i> Explore topics</span>
                     </div>
                   </div>
                 ))}
@@ -174,9 +172,9 @@ const PlacementPrep = () => {
                 <h2>{selectedTopic?.name} Study Plan & Sections</h2>
                 <p>
                   {selectedTopic?.name === 'DSA'
-                    ? 'Curated 150 essential problems across all core data structures and algorithms (LeetCode Top Interview 150)'
+                    ? 'DSA interview problems across core data structures and algorithms'
                     : selectedTopic?.name === 'Aptitude'
-                    ? 'Curated Quantitative Aptitude topic sections based on IndiaBIX placement tests'
+                    ? 'Quantitative aptitude practice topics'
                     : selectedTopic?.description}
                 </p>
               </div>
@@ -194,9 +192,7 @@ const PlacementPrep = () => {
                     <h3>{sub.name}</h3>
                     <p>{sub.description}</p>
                     <div className="topic-stats" style={{ marginTop: '10px' }}>
-                      <span>
-                        <i className="fas fa-question-circle"></i> {typeof sub.questionCount === 'number' ? `${sub.questionCount} Questions` : 'View Questions'}
-                      </span>
+                      <span><i className="fas fa-layer-group"></i> Explore problems</span>
                     </div>
                   </div>
                 ))}
@@ -226,7 +222,7 @@ const PlacementPrep = () => {
                     <div className="progress-badge-box">
                       <div className="subtopic-badge">
                         <i className="fas fa-trophy" style={{ marginRight: '6px', color: '#f59e0b' }}></i>
-                        Solved: {completedCount} / {questions.length} ({Math.round((completedCount / questions.length) * 100)}%)
+                        Progress: {Math.round((completedCount / questions.length) * 100)}%
                       </div>
                       <div className="progress-track-bar">
                         <div 
@@ -285,7 +281,7 @@ const PlacementPrep = () => {
                               className="open-link-btn"
                             >
                               <i className="fas fa-external-link-alt" style={{ marginRight: '6px' }}></i>
-                              {question.link.includes('leetcode.com') ? 'Solve on LeetCode' : question.link.includes('indiabix.com') ? 'Practice on IndiaBIX' : 'Open Problem'}
+                              Open Problem
                             </a>
                           )}
                         </div>

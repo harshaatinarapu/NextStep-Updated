@@ -198,7 +198,7 @@ const AdminPlacementPrep = () => {
             <div className="tab-icon"><i className="fas fa-laptop-code"></i></div>
             <div className="tab-text">
               <h3>Add DSA Questions</h3>
-              <span>LeetCode Top Interview 150 & Technical Interview coding problems</span>
+              <span>DSA interview problems and technical coding practice</span>
             </div>
             {activeTab === 'dsa' && <span className="tab-indicator"><i className="fas fa-check-circle"></i></span>}
           </button>
@@ -211,7 +211,7 @@ const AdminPlacementPrep = () => {
             <div className="tab-icon"><i className="fas fa-brain"></i></div>
             <div className="tab-text">
               <h3>Add Aptitude Questions</h3>
-              <span>IndiaBIX Quantitative Aptitude & Screening Test sections</span>
+              <span>Quantitative aptitude and screening test practice</span>
             </div>
             {activeTab === 'aptitude' && <span className="tab-indicator"><i className="fas fa-check-circle"></i></span>}
           </button>
@@ -261,7 +261,7 @@ const AdminPlacementPrep = () => {
                     <option value="">-- Select a {activeTab === 'dsa' ? 'DSA Topic' : 'Aptitude Section'} --</option>
                     {currentTopicList.map((topic) => (
                       <option key={topic._id} value={topic._id}>
-                        {topic.name} ({typeof topic.questionCount === 'number' ? `${topic.questionCount} questions` : 'Explore'})
+                        {topic.name}
                       </option>
                     ))}
                   </select>
@@ -296,7 +296,7 @@ const AdminPlacementPrep = () => {
               <div className="form-group">
                 <label htmlFor="questionUrl">
                   <i className="fas fa-link" style={{ marginRight: '8px', color: '#6366f1' }}></i>
-                  Question URL (e.g. LeetCode, CodeChef, IndiaBIX)
+                  Problem URL
                 </label>
                 <input
                   id="questionUrl"
@@ -304,8 +304,8 @@ const AdminPlacementPrep = () => {
                   className="form-control"
                   placeholder={
                     activeTab === 'dsa'
-                      ? 'e.g. https://leetcode.com/problems/trapping-rain-water/ or CodeChef link'
-                      : 'e.g. https://www.indiabix.com/aptitude/time-and-work/'
+                      ? 'Paste a link to the coding problem'
+                      : 'Paste a link to the aptitude problem'
                   }
                   value={questionUrl}
                   onChange={(e) => setQuestionUrl(e.target.value)}

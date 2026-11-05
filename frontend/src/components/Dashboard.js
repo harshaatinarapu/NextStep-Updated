@@ -97,15 +97,15 @@ const Dashboard = () => {
               <i className="fas fa-laptop-code"></i>
             </div>
             <h2>Placement Preparation</h2>
-            <p>Get interview-ready with 150 LeetCode DSA problems & 20 IndiaBIX Quantitative Aptitude sections.</p>
+            <p>Prepare with DSA interview problems and quantitative aptitude practice.</p>
             
             <ul className="option-features">
               <li><span className="feature-bullet bullet-cyan"><i className="fas fa-code"></i></span> Technical interview DSA coding</li>
-              <li><span className="feature-bullet bullet-pink"><i className="fas fa-brain"></i></span> IndiaBIX Quantitative Aptitude</li>
+              <li><span className="feature-bullet bullet-pink"><i className="fas fa-brain"></i></span> Quantitative aptitude practice</li>
               <li><span className="feature-bullet bullet-amber"><i className="fas fa-building"></i></span> Company tags (TCS, Amazon, Infosys)</li>
               <li><span className="feature-bullet bullet-emerald"><i className="fas fa-check-circle"></i></span> Live progress tracking per topic</li>
               <li><span className="feature-bullet bullet-purple"><i className="fas fa-comments"></i></span> HR & behavioral interview tips</li>
-              <li><span className="feature-bullet bullet-gold"><i className="fas fa-trophy"></i></span> LeetCode & IndiaBIX direct practice</li>
+              <li><span className="feature-bullet bullet-gold"><i className="fas fa-trophy"></i></span> Direct practice links</li>
             </ul>
 
             <button className="option-btn option-btn-placement">
