@@ -190,14 +190,22 @@ Populate the database with branches, subjects, mappings, the 150 LeetCode Top In
 npm run seed
 ```
 
+To add the IT Semester 7 subjects to an existing database without clearing its data, run:
+
+```bash
+npm run seed:it-semester-7
+```
+
+This adds Linux Programming, Cloud Computing, Automata theory and compiler design, Devops, Advanced Entrepreneurship, Products and Services, and Cryptography and Network Security. The command is safe to rerun.
+
 Output:
 ```text
 🌱 Starting NextStep database seeding...
  Connected to MongoDB: mongodb://127.0.0.1:27017/nextstep
 🧹 Cleared existing database records.
  Created 10 branches.
- Created 16 subjects.
- Created 128 branch-subject mappings.
+ Created 23 subjects.
+ Created 135 branch-subject mappings.
  Created 8 sample resources.
  Created 20 Aptitude sections with 77 questions from IndiaBIX.
  Created 23 DSA subtopics with 150 questions from LeetCode Top Interview 150.

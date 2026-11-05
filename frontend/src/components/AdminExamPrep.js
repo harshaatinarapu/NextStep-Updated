@@ -262,6 +262,7 @@ const AdminExamPrep = () => {
                   onChange={(e) => setResourceType(e.target.value)}
                 >
                   <option value="notes">Lecture Notes & Summaries</option>
+                  <option value="ppt">PowerPoint Slides</option>
                   <option value="previous_paper">Previous Year Paper (PYQ)</option>
                   <option value="video">Video Lecture / Playlist</option>
                   <option value="book">Reference Textbook</option>

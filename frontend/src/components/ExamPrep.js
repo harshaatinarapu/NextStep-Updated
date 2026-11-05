@@ -139,13 +139,6 @@ const ExamPrep = () => {
     navigate('/dashboard');
   };
 
-  const handleResourceClick = (resource) => {
-    const targetUrl = resource.fileUrl || resource.url;
-    if (targetUrl) {
-      window.open(targetUrl, '_blank', 'noopener,noreferrer');
-    }
-  };
-
   if (loading) {
     return (
       <div className="exam-container">
@@ -226,7 +219,7 @@ const ExamPrep = () => {
               <div className="subjects-list">
                 {subjects.length > 0 ? (
                   subjects.map((subject, index) => (
-                    <div 
+                    <div
                       key={subject._id || index} 
                       className="subject-card"
                       onClick={() => handleSubjectClick(subject)}
@@ -278,6 +271,16 @@ const ExamPrep = () => {
                   <h3>Notes</h3>
                   <p>Study materials and lecture notes</p>
                 </div>
+                <div
+                  className="resource-type-card"
+                  onClick={() => handleResourceTypeClick('ppt')}
+                >
+                  <div className="resource-type-icon">
+                    <i className="fas fa-file-powerpoint"></i>
+                  </div>
+                  <h3>PowerPoint Slides</h3>
+                  <p>Presentations and slides</p>
+                </div>
                 
                 <div 
                   className="resource-type-card"
@@ -320,34 +323,57 @@ const ExamPrep = () => {
                   <i className="fas fa-arrow-left"></i> Back to Resource Types
                 </button>
                 <h2>{selectedSubject?.subject?.subjectName || selectedSubject?.subjectName || 'Selected Subject'}</h2>
-                <p>Resource Type: {selectedResourceType.replace('_', ' ').toUpperCase()}</p>
+                <p>
+                  <i className="fas fa-folder-open" aria-hidden="true"></i>
+                  {selectedResourceType === 'ppt'
+                    ? 'PowerPoint Slides'
+                    : selectedResourceType.replace(/_/g, ' ').toUpperCase()}
+                  <span className="resource-count">
+                    {resources.length} {resources.length === 1 ? 'resource' : 'resources'}
+                  </span>
+                </p>
               </div>
 
               <div className="resources-list">
                 {resources.length > 0 ? (
                   <div className="resources-grid">
                     {resources.map((resource) => (
-                      <div 
-                        key={resource._id} 
-                        className="resource-card"
-                        onClick={() => handleResourceClick(resource)}
-                      >
-                        <div className="resource-icon">
+                      <article key={resource._id} className="resource-card">
+                        <div className={`resource-icon resource-icon-${resource.resourceType || 'file'}`}>
                           {resource.resourceType === 'video' && <i className="fas fa-play-circle"></i>}
                           {resource.resourceType === 'notes' && <i className="fas fa-file-alt"></i>}
                           {resource.resourceType === 'previous_paper' && <i className="fas fa-file-pdf"></i>}
                           {resource.resourceType === 'book' && <i className="fas fa-book"></i>}
+                          {resource.resourceType === 'ppt' && <i className="fas fa-file-powerpoint"></i>}
+                          {!['video', 'notes', 'previous_paper', 'book', 'ppt'].includes(resource.resourceType) && <i className="fas fa-file-download"></i>}
                         </div>
                         <div className="resource-content">
                           <h4>{resource.title}</h4>
-                          <p className="resource-type">{resource.resourceType.replace('_', ' ').toUpperCase()}</p>
-                          <p className="resource-branch">Branch: {resource.branch}</p>
-                          <p className="resource-semester">Semester: {resource.sem}</p>
+                          <div className="resource-meta">
+                            <span className="resource-type">
+                              {resource.resourceType === 'ppt'
+                                ? 'PowerPoint Slides'
+                                : (resource.resourceType || 'resource').replace(/_/g, ' ')}
+                            </span>
+                            {resource.branch && <span>Branch {resource.branch}</span>}
+                            {resource.sem && <span>Semester {resource.sem}</span>}
+                          </div>
                         </div>
-                        <div className="resource-action">
-                          <i className="fas fa-download"></i>
-                        </div>
-                      </div>
+                        {(resource.fileUrl || resource.url) ? (
+                          <a
+                            className="resource-download-btn"
+                            href={resource.fileUrl || resource.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`Open or download ${resource.title}`}
+                          >
+                            <i className="fas fa-download" aria-hidden="true"></i>
+                            <span>Open / Download</span>
+                          </a>
+                        ) : (
+                          <span className="resource-unavailable">Link unavailable</span>
+                        )}
+                      </article>
                     ))}
                   </div>
                 ) : (

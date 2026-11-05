@@ -10,6 +10,7 @@
     "clear-cookies": "node clear-cookies.js",
     "restart": "node restart-dev.js",
     "seed": "node scripts/seed/index.js",
+    "seed:it-semester-7": "node scripts/seed/seedItSemester7.js",
     "test": "node test-suite.js"
   },
   "author": "",

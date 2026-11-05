@@ -13,6 +13,7 @@ const Resource = require("../../models/resourse");
 const User = require("../../models/userSchema");
 const leetcodeTop150 = require("./leetcodeTop150Data");
 const indiabixAptitude = require("./indiabixAptitudeData");
+const itSemester7Subjects = require("./itSemester7Subjects");
 
 const mongoURI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/nextstep";
 
@@ -61,7 +62,8 @@ async function seed() {
     { subjectName: "CN", subjectCode: "9FC07" },
     { subjectName: "SE", subjectCode: "9FC08" },
     { subjectName: "COA", subjectCode: "9FC09" },
-    { subjectName: "Java OOP", subjectCode: "9FC10" }
+    { subjectName: "Java OOP", subjectCode: "9FC10" },
+    ...itSemester7Subjects.map(subjectName => ({ subjectName }))
   ];
 
   const subjectDocs = {};
@@ -128,6 +130,14 @@ async function seed() {
         });
       }
     }
+  }
+
+  for (const subjectName of itSemester7Subjects) {
+    branchsubEntries.push({
+      branch: branchDocs.IT._id,
+      subject: subjectDocs[subjectName]._id,
+      semester: 7
+    });
   }
 
   await Branchsub.insertMany(branchsubEntries);

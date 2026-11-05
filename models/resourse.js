@@ -7,7 +7,7 @@ const resourceSchema = new mongoose.Schema({
   sem: Number,
   resourceType: { 
     type: String, 
-    enum: ["notes", "previous_paper", "pyq", "video", "book"] 
+    enum: ["notes", "ppt", "previous_paper", "pyq", "video", "book"]
   },
   title: { type: String, required: true },
   url: { type: String, required: true },
